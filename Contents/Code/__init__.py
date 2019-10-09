@@ -22,79 +22,39 @@ def GetParentDir(directories):
   if parent_dirs.has_key(''):
     del parent_dirs['']
   return parent_dirs
-  
-def FindArtistNfo(metadata, paths):
+
+#searches for a valid nfo file, loads it up ands returns it
+def FindNfo(paths, nfo):
   for path in paths:
     for f in os.listdir(path):
       (fn, ext) = os.path.splitext(f)
-      if(fn == 'artist' and not fn.startswith('.') and ext[1:] == "nfo"):
+      if(fn == nfo and not fn.startswith('.') and ext[1:] == "nfo"):
         nfo_file = os.path.join(path, f)
         nfo_text = Core.storage.load(nfo_file)
         # work around failing XML parses for things with &'s in them. This may need to go farther than just &'s....
         nfo_text = NFO_TEXT_REGEX_1.sub('&amp;', nfo_text)
         # remove empty xml tags from nfo
-        Log('Removing empty XML tags from artist.nfo...')
+        Log('Removing empty XML tags from nfo...')
         nfo_text = NFO_TEXT_REGEX_2.sub('', nfo_text)
 
         nfo_text_lower = nfo_text.lower()
-        if nfo_text_lower.count('<artist') > 0 and nfo_text_lower.count('</artist>') > 0:
+        if nfo_text_lower.count('<'+nfo) > 0 and nfo_text_lower.count('</'+nfo+'>') > 0:
             # Remove URLs (or other stuff) at the end of the XML file
-            nfo_text = '{content}</artist>'.format(content=nfo_text.rsplit('</artist>', 1)[0])
+            content = nfo_text.rsplit('</'+nfo+'>', 1)[0]
+            nfo_text = '{content}</{nfo}>'.format(content=content,nfo=nfo)
 
             # likely a kodi nfo file
             try:
-                nfo_xml = XML.ElementFromString(nfo_text).xpath('//artist')[0]
+                nfo_xml = XML.ElementFromString(nfo_text).xpath('//'+nfo)[0]
             except:
-                Log('ERROR: Cant parse XML in {nfo} Skipping!'.format(nfo=nfo_file))
+                Log("ERROR: Cant parse %s from XML in %s Skipping!", nfo, nfo_file)
                 continue
 
             # remove empty xml tags
-            Log('Removing empty XML tags from artist.nfo...')
+            Log('Removing empty XML tags from nfo...')
             nfo_xml = remove_empty_tags(nfo_xml)
-
-            add_tag(nfo_xml, metadata.summary, 'biography')
-            add_tags(nfo_xml, metadata.genres, 'genre')
-            add_tags(nfo_xml, metadata.styles, 'style')
-            add_tags(nfo_xml, metadata.moods, 'mood')
-    
-        Log("artist fields loaded from file %s", nfo_file)
-
-def FindAlbumNfo(metadata, paths):
-  for path in paths:
-    for f in os.listdir(path):
-      (fn, ext) = os.path.splitext(f)
-      if(fn == 'album' and not fn.startswith('.') and ext[1:] == "nfo"):
-        nfo_file = os.path.join(path, f)
-        nfo_text = Core.storage.load(nfo_file)
-        # work around failing XML parses for things with &'s in them. This may need to go farther than just &'s....
-        nfo_text = NFO_TEXT_REGEX_1.sub('&amp;', nfo_text)
-        # remove empty xml tags from nfo
-        Log('Removing empty XML tags from album.nfo...')
-        nfo_text = NFO_TEXT_REGEX_2.sub('', nfo_text)
-
-        nfo_text_lower = nfo_text.lower()
-        if nfo_text_lower.count('<album') > 0 and nfo_text_lower.count('</album>') > 0:
-            # Remove URLs (or other stuff) at the end of the XML file
-            nfo_text = '{content}</album>'.format(content=nfo_text.rsplit('</album>', 1)[0])
-
-            # likely a kodi nfo file
-            try:
-                nfo_xml = XML.ElementFromString(nfo_text).xpath('//album')[0]
-            except:
-                Log('ERROR: Cant parse XML in {nfo} Skipping!'.format(nfo=nfo_file))
-                continue
-
-            # remove empty xml tags
-            Log('Removing empty XML tags from album.nfo...')
-            nfo_xml = remove_empty_tags(nfo_xml)
-
-            add_tag(nfo_xml, metadata.summary, 'review')
-            add_tag(nfo_xml, metadata.studio, 'label')
-            add_tags(nfo_xml, metadata.genres, 'genre')
-            add_tags(nfo_xml, metadata.styles, 'style')
-            add_tags(nfo_xml, metadata.moods, 'mood')
-
-        Log("album fields loaded from file %s", nfo_file)
+            Log("%s data loaded from file %s", nfo, nfo_file)
+            return nfo_xml
 
 def remove_empty_tags(document):
     """
@@ -114,6 +74,27 @@ def remove_empty_tags(document):
         tags=sorted(set(empty_tags)) or ''
     ))
     return document
+    
+#searches for artist.nfo in Artist folder and adds fields to the metadata  
+def ReadArtistNfo(metadata, paths):
+  nfo_xml = FindNfo(paths,'artist')
+  if nfo_xml:
+    add_tag(nfo_xml, metadata.summary, 'biography')
+    add_tags(nfo_xml, metadata.genres, 'genre')
+    add_tags(nfo_xml, metadata.styles, 'style')
+    add_tags(nfo_xml, metadata.moods, 'mood')
+    Log('artist fields added from artist.nfo')
+
+#searches for album.nfo in Album folder and adds fields to the metadata
+def ReadAlbumNfo(metadata, paths):
+  nfo_xml = FindNfo(paths,'album')
+  if nfo_xml:
+    add_tag(nfo_xml, metadata.summary, 'review')
+    add_tag(nfo_xml, metadata.studio, 'label')
+    add_tags(nfo_xml, metadata.genres, 'genre')
+    add_tags(nfo_xml, metadata.styles, 'style')
+    add_tags(nfo_xml, metadata.moods, 'mood')
+    Log('album fields added from album.nfo')
 
 def add_tag(nfo_xml, metadata_tag, name):
     try:
@@ -131,9 +112,8 @@ def add_tags(nfo_xml, metadata_tags, name):
         Log('No <{tag}> tag in nfo'.format(tag=name))
         pass
 
-
 class KodiArtistNfo(Agent.Artist):
-  contributes_to = ['com.plexapp.agents.discogs', 'com.plexapp.agents.lastfm', 'com.plexapp.agents.plexmusic', 'com.plexapp.agents.none']
+  contributes_to = ['com.plexapp.agents.none']
   primary_provider = False
   persist_stored_files = False
   name = "Kodi Nfo (Artists)"
@@ -142,7 +122,6 @@ class KodiArtistNfo(Agent.Artist):
     results.Append(MetadataSearchResult(id = 'null', name=media.artist, score = 100))
     
   def update(self, metadata, media, lang, child_guid=None):
-    Log(metadata.summary)
     dirs = {}
     
     for a in media.albums:
@@ -150,45 +129,27 @@ class KodiArtistNfo(Agent.Artist):
         track = media.albums[a].tracks[t].items[0]
         dirs[os.path.dirname(track.parts[0].file)] = True
     
-    artist_dirs = GetParentDir(dirs)
-    ## Assumes folder structure of
-    #     * Artist
-    #         * summary.txt
-    #         * Album
-    #           * summary.txt
-    #           * audio tracks
-    #     ... etc.
+    artist_dirs = GetParentDir(dirs)    
     
-    #Log(artist_dir) #debug
-    
-    FindArtistNfo(metadata, artist_dirs) #searches for artist.nfo in Artist folder and adds fields to the metadata
-    
+    ReadArtistNfo(metadata, artist_dirs) 
     Log("finished")
-    
-    
-    
+
     
 class KodiAlbumNfo(Agent.Album):
   name = "Kodi Nfo (Albums)"
   primary_provider = False
   persist_stored_files = False
-  contributes_to = ['com.plexapp.agents.discogs', 'com.plexapp.agents.lastfm', 'com.plexapp.agents.plexmusic', 'com.plexapp.agents.none']
+  contributes_to = ['com.plexapp.agents.none']
   
   def search(self, results, media, lang):
     results.Append(MetadataSearchResult(id = 'null', score = 100))
     
   def update(self, metadata, media, lang):
-    #metadata.summary = " " #this is the only way I've found to blank it out if the summary file is removed, empty string doesn't work
     dirs = {}
     
     for t in media.tracks:
         track = media.tracks[t].items[0]
-        #file path of the track is: track.parts[0].file
         dirs[os.path.dirname(track.parts[0].file)] = True
     
-    FindAlbumNfo(metadata, dirs) #searches for album.nfo in Album folder and adds fields to the metadata
-    
+    ReadAlbumNfo(metadata, dirs) 
     Log("finished")
-
-
-    
