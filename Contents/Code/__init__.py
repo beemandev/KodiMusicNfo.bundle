@@ -79,7 +79,7 @@ def remove_empty_tags(document):
 def ReadArtistNfo(metadata, paths):
   nfo_xml = FindNfo(paths,'artist')
   if nfo_xml:
-    add_tag(nfo_xml, metadata.summary, 'biography')
+    metadata.summary = get_tag(nfo_xml, 'biography')
     add_tags(nfo_xml, metadata.genres, 'genre')
     add_tags(nfo_xml, metadata.styles, 'style')
     add_tags(nfo_xml, metadata.moods, 'mood')
@@ -89,28 +89,26 @@ def ReadArtistNfo(metadata, paths):
 def ReadAlbumNfo(metadata, paths):
   nfo_xml = FindNfo(paths,'album')
   if nfo_xml:
-    add_tag(nfo_xml, metadata.summary, 'review')
-    add_tag(nfo_xml, metadata.studio, 'label')
+    metadata.summary = get_tag(nfo_xml, 'review')
+    metadata.studio = get_tag(nfo_xml, 'label')
     add_tags(nfo_xml, metadata.genres, 'genre')
     add_tags(nfo_xml, metadata.styles, 'style')
     add_tags(nfo_xml, metadata.moods, 'mood')
     Log('album fields added from album.nfo')
 
-def add_tag(nfo_xml, metadata_tag, name):
+def get_tag(nfo_xml, name):
     try:
-        metadata_tag = nfo_xml.xpath(name)[0].text
+        return nfo_xml.xpath(name)[0].text
     except:
-        Log('No <{tag}> tag in nfo'.format(tag=name))
-        pass
-
+        Log('No <%s> tag in nfo', name)
+        
 def add_tags(nfo_xml, metadata_tags, name):
     try:
         tags = nfo_xml.xpath(name)
         metadata_tags.clear()
         [metadata_tags.add(t.strip()) for tagXML in tags for t in tagXML.text.split('/')]
     except:
-        Log('No <{tag}> tag in nfo'.format(tag=name))
-        pass
+        Log('No <%s> tag in nfo', name)
 
 class KodiArtistNfo(Agent.Artist):
   contributes_to = ['com.plexapp.agents.none']
@@ -153,3 +151,6 @@ class KodiAlbumNfo(Agent.Album):
     
     ReadAlbumNfo(metadata, dirs) 
     Log("finished")
+
+
+    
