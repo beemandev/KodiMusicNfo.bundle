@@ -34,7 +34,6 @@ def FindNfo(paths, nfo):
         # work around failing XML parses for things with &'s in them. This may need to go farther than just &'s....
         nfo_text = NFO_TEXT_REGEX_1.sub('&amp;', nfo_text)
         # remove empty xml tags from nfo
-        Log('Removing empty XML tags from nfo...')
         nfo_text = NFO_TEXT_REGEX_2.sub('', nfo_text)
 
         nfo_text_lower = nfo_text.lower()
@@ -50,8 +49,6 @@ def FindNfo(paths, nfo):
                 Log("ERROR: Cant parse %s from XML in %s Skipping!", nfo, nfo_file)
                 continue
 
-            # remove empty xml tags
-            Log('Removing empty XML tags from nfo...')
             nfo_xml = remove_empty_tags(nfo_xml)
             Log("%s data loaded from file %s", nfo, nfo_file)
             return nfo_xml
@@ -79,30 +76,32 @@ def remove_empty_tags(document):
 def ReadArtistNfo(metadata, paths):
   nfo_xml = FindNfo(paths,'artist')
   if nfo_xml:
-    metadata.summary = get_tag(nfo_xml, 'biography')
-    add_tags(nfo_xml, metadata.genres, 'genre')
-    add_tags(nfo_xml, metadata.styles, 'style')
-    add_tags(nfo_xml, metadata.moods, 'mood')
+    metadata.summary = get_tagnfo(nfo_xml, 'biography')
+    add_tagsnfo(nfo_xml, metadata.genres, 'genre')
+    add_tagsnfo(nfo_xml, metadata.styles, 'style')
+    add_tagsnfo(nfo_xml, metadata.moods, 'mood')
+    add_tagsnfo(nfo_xml, metadata.collections, 'tag') #works
     Log('artist fields added from artist.nfo')
 
 #searches for album.nfo in Album folder and adds fields to the metadata
 def ReadAlbumNfo(metadata, paths):
   nfo_xml = FindNfo(paths,'album')
   if nfo_xml:
-    metadata.summary = get_tag(nfo_xml, 'review')
-    metadata.studio = get_tag(nfo_xml, 'label')
-    add_tags(nfo_xml, metadata.genres, 'genre')
-    add_tags(nfo_xml, metadata.styles, 'style')
-    add_tags(nfo_xml, metadata.moods, 'mood')
+    metadata.summary = get_tagnfo(nfo_xml, 'review')
+    add_tagsnfo(nfo_xml, metadata.genres, 'genre')
+    add_tagsnfo(nfo_xml, metadata.styles, 'style')
+    add_tagsnfo(nfo_xml, metadata.moods, 'mood')
+    metadata.studio = get_tagnfo(nfo_xml, 'label')
+    add_tagsnfo(nfo_xml, metadata.collections, 'tag') #doesn't work?
     Log('album fields added from album.nfo')
 
-def get_tag(nfo_xml, name):
+def get_tagnfo(nfo_xml, name):
     try:
         return nfo_xml.xpath(name)[0].text
     except:
         Log('No <%s> tag in nfo', name)
         
-def add_tags(nfo_xml, metadata_tags, name):
+def add_tagsnfo(nfo_xml, metadata_tags, name):
     try:
         tags = nfo_xml.xpath(name)
         metadata_tags.clear()
@@ -120,6 +119,7 @@ class KodiArtistNfo(Agent.Artist):
     results.Append(MetadataSearchResult(id = 'null', name=media.artist, score = 100))
     
   def update(self, metadata, media, lang, child_guid=None):
+    Log("#bm started artist nfo import")
     dirs = {}
     
     for a in media.albums:
@@ -130,9 +130,9 @@ class KodiArtistNfo(Agent.Artist):
     artist_dirs = GetParentDir(dirs)    
     
     ReadArtistNfo(metadata, artist_dirs) 
-    Log("finished")
 
     
+    Log("#bm finished artist nfo import")
 class KodiAlbumNfo(Agent.Album):
   name = "Kodi Nfo (Albums)"
   primary_provider = False
@@ -143,6 +143,7 @@ class KodiAlbumNfo(Agent.Album):
     results.Append(MetadataSearchResult(id = 'null', score = 100))
     
   def update(self, metadata, media, lang):
+    Log("#bm started album nfo import")
     dirs = {}
     
     for t in media.tracks:
@@ -150,7 +151,4 @@ class KodiAlbumNfo(Agent.Album):
         dirs[os.path.dirname(track.parts[0].file)] = True
     
     ReadAlbumNfo(metadata, dirs) 
-    Log("finished")
-
-
-    
+    Log("#bm finished album nfo import")
