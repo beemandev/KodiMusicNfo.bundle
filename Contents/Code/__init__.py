@@ -128,11 +128,9 @@ class KodiArtistNfo(Agent.Artist):
         dirs[os.path.dirname(track.parts[0].file)] = True
     
     artist_dirs = GetParentDir(dirs)    
-    
     ReadArtistNfo(metadata, artist_dirs) 
-
-    
     Log("#bm finished artist nfo import")
+
 class KodiAlbumNfo(Agent.Album):
   name = "Kodi Nfo (Albums)"
   primary_provider = False
@@ -152,3 +150,6 @@ class KodiAlbumNfo(Agent.Album):
     
     ReadAlbumNfo(metadata, dirs) 
     Log("#bm finished album nfo import")
+
+
+    
