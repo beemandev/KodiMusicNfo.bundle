@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<album>
+    <title>The Queen Is Dead</title>
+    <musicBrainzAlbumID>d8dde278-482c-3cc8-a530-fea70476f3a5</musicBrainzAlbumID>
+    <artist>The Smiths</artist>
+    <genre>Indie</genre>
+    <style>Rock/Pop</style>
+    <mood>Quirky</mood>
+    <compilation>false</compilation>
+    <releasedate>1988-01-01</releasedate>
+    <label>Festival Records</label>
+    <type>album</type>
+    <thumb>https://www.theaudiodb.com/images/media/album/thumb/the-queen-is-dead-4defd419d8812.jpg</thumb>
+    <rating>9.5</rating>
+    <year>1986</year>
+    <review>The Queen Is Dead is the third studio album by the English alternative rock band The Smiths. It was released on 16 June 1986 in the United Kingdom by Rough Trade Records and released in the United States on 23 June 1986 through Sire Records. The album spent twenty-two weeks on the UK Albums Chart, peaking at #2. Across the Atlantic, it reached #28 in Canada on the RPM 100 album chart and #70 on the Billboard 200 chart, and was certified Gold by the RIAA in late 1990. It has sold consistently well ever since. The album cover, designed by Morrissey, features Alain Delon from the 1964 film L'Insoumis.</review>
+    <track>
+        <musicBrainzTrackID>a054c935-a346-4533-92f4-00e0ed590680</musicBrainzTrackID>
+        <position>01</position>
+        <title>The Queen Is Dead</title>
+        <duration>06:24</duration>
+        <musicvideo>https://www.youtube.com/watch?v=Wz5IFl7uCis</musicvideo>
+        <review>This song shows Morrissey's unhappiness with the British monarchy. He makes reference to the Queen with her head in a sling. It's not quite as vengeful as "God Save The Queen," but still a scathing attack on the royals.
+The music for this song emerged from a pounding 13-minute jam session with Marr capturing accidental feedback from his wah-wah pedal. "I held my breath for 10 minutes while I was doing it," he recalled to NMEJune 18, 2011. "Conceptually I was trying to do that Detroit thing, the MC5 and garage rock and I just got it wrong - but if you're lucky that stuff comes out sounding like yourself anyway."</review>
+    </track>
+    <track>
+        <musicBrainzTrackID>a9e06b60-9c61-4a04-9be1-7abb7e281c59</musicBrainzTrackID>
+        <position>02</position>
+        <title>Frankly, Mr. Shankly</title>
+        <duration>02:19</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>c0dbdec0-17c5-4b47-8e3a-9fd5d2a09305</musicBrainzTrackID>
+        <position>03</position>
+        <title>I Know It's Over</title>
+        <duration>05:49</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>52caf2de-5f68-4ffc-8ace-3cf937f3f2e8</musicBrainzTrackID>
+        <position>04</position>
+        <title>Never Had No One Ever</title>
+        <duration>03:37</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>03c2ee5d-ee00-416c-8237-1e5fc60cb714</musicBrainzTrackID>
+        <position>05</position>
+        <title>Cemetry Gates</title>
+        <duration>02:41</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>2c5ffe3e-509e-4607-9b4c-e846b4b50e0f</musicBrainzTrackID>
+        <position>06</position>
+        <title>Bigmouth Strikes Again</title>
+        <duration>03:14</duration>
+        <rating>10</rating>
+        <loved>1</loved>
+    </track>
+    <track>
+        <musicBrainzTrackID>958fd167-0305-4021-85fc-e8ee5cc7fc45</musicBrainzTrackID>
+        <position>07</position>
+        <title>The Boy With the Thorn in His Side</title>
+        <duration>03:17</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>f3f14db5-36a8-4e0b-8291-5d62c5b43e74</musicBrainzTrackID>
+        <position>08</position>
+        <title>Vicar in a Tutu</title>
+        <duration>02:22</duration>
+    </track>
+    <track>
+        <musicBrainzTrackID>f87a0c54-60ef-4db1-9628-96677504692d</musicBrainzTrackID>
+        <position>09</position>
+        <title>There Is a Light That Never Goes Out</title>
+        <duration>04:03</duration>
+        <rating>10</rating>
+        <loved>1</loved>
+    </track>
+    <track>
+        <musicBrainzTrackID>25411ee0-663d-45a8-add3-cdd65d4cc71c</musicBrainzTrackID>
+        <position>10</position>
+        <title>Some Girls Are Bigger Than Others</title>
+        <duration>03:14</duration>
+    </track>
+    <releasetype>album</releasetype>
+</album>
